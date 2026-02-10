@@ -22,7 +22,7 @@ export const generateShoppingList = (
       if (recipe) {
         const scaleFactor = slot.servings / recipe.servings;
         recipe.ingredients.forEach((ing) => {
-          const key = `${ing.name.toLowerCase()}_${ing.unit}`;
+          const key = `${ing.name.toLowerCase().trim()}_${ing.unit}`;
           const current = neededIngredients.get(key) || {
             amount: 0,
             unit: ing.unit,
@@ -237,8 +237,12 @@ export const generateShoppingList = (
       finalName = finalName.charAt(0).toUpperCase() + finalName.slice(1);
 
       const category = getCategory(finalName);
+      const stableId = Buffer.from(`${key}_${category}_${userId}`).toString(
+        "base64",
+      );
+
       (shoppingList[category] as ShoppingListItem[]).push({
-        id: uuidv4(),
+        id: stableId,
         userId,
         name: finalName,
         amount: Math.ceil(buyAmount * 100) / 100,

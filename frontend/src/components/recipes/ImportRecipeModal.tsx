@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
 import { useRecipes } from "../../hooks/useRecipes";
 import { Link2, Loader } from "lucide-react";
 import { useToast } from "../feedback/Toast";
+import { useAppForm } from "../../hooks/useAppForm";
+import { importRecipeSchema, ImportRecipeData } from "@recipe-planner/shared";
 
 interface ImportRecipeModalProps {
   isOpen: boolean;
@@ -17,18 +18,24 @@ export const ImportRecipeModal = ({
 }: ImportRecipeModalProps) => {
   const { importRecipe, isImporting } = useRecipes();
   const { addToast } = useToast();
-  const [url, setUrl] = useState("");
 
-  const handleImport = async () => {
-    if (!url.trim()) {
-      addToast("Please enter a valid URL", "error");
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useAppForm({
+    schema: importRecipeSchema,
+    defaultValues: {
+      url: "",
+    },
+  });
 
+  const handleImport = async (data: ImportRecipeData) => {
     try {
-      await importRecipe({ url }).unwrap();
+      await importRecipe(data).unwrap();
       addToast("Recipe imported successfully!", "success");
-      setUrl("");
+      reset();
       onClose();
     } catch (err: unknown) {
       const error = err as { data?: { message?: string } };
@@ -41,7 +48,7 @@ export const ImportRecipeModal = ({
   };
 
   const handleClose = () => {
-    setUrl("");
+    reset();
     onClose();
   };
 
@@ -62,9 +69,9 @@ export const ImportRecipeModal = ({
           </Button>
           <Button
             className="flex-1 btn-primary h-10 rounded-xl"
-            onClick={handleImport}
+            onClick={handleSubmit(handleImport)}
             isLoading={isImporting}
-            disabled={!url.trim() || isImporting}
+            disabled={isImporting}
           >
             {isImporting ? "Importing..." : "Import Recipe"}
           </Button>
@@ -101,12 +108,18 @@ export const ImportRecipeModal = ({
             <input
               type="url"
               placeholder="https://example.com/recipe"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-500 transition-all"
+              {...register("url")}
+              className={`w-full pl-11 pr-4 py-3 bg-gray-50 border rounded-xl text-sm outline-none transition-all ${
+                errors.url
+                  ? "border-rose-500"
+                  : "border-gray-200 focus:border-indigo-500"
+              }`}
               disabled={isImporting}
             />
           </div>
+          {errors.url && (
+            <p className="text-xs text-rose-500 ml-1">{errors.url.message}</p>
+          )}
           <p className="text-xs text-gray-500 ml-1 mt-1">
             Supports most popular recipe websites
           </p>

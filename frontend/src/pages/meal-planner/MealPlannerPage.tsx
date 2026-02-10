@@ -22,18 +22,17 @@ const formatDateLocal = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
+const getStartOfWeek = (date: Date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day;
+  d.setHours(0, 0, 0, 0);
+  return new Date(d.setDate(diff));
+};
+
 const MealPlannerPage = () => {
   const { addToast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const getStartOfWeek = (date: Date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day;
-    d.setHours(0, 0, 0, 0);
-    return new Date(d.setDate(diff));
-  };
-
   const startOfWeek = getStartOfWeek(currentDate);
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
@@ -46,11 +45,9 @@ const MealPlannerPage = () => {
 
   const { recipes } = useRecipes({ limit: 1000 });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selectedMealType, setSelectedMealType] = useState(MEAL_TYPES[0].label);
-  const [selectedRecipeId, setSelectedRecipeId] = useState("");
-  const [modalServings, setModalServings] = useState(1);
 
   const { handleDrop, handleUpdateServings, handleRemoveMeal } =
     useMealPlanActions({
@@ -75,18 +72,16 @@ const MealPlannerPage = () => {
     setCurrentDate(d);
   };
 
-  const handleManualAdd = async () => {
-    if (!selectedDay || !selectedRecipeId || !plan) return;
+  const handleAddMeal = async (recipeId: string, servings: number) => {
+    if (!selectedDay || !recipeId || !plan) return;
     const dateStr = formatDateLocal(selectedDay);
     handleDrop(
-      { type: ITEM_TYPES.RECIPE, recipeId: selectedRecipeId },
+      { type: ITEM_TYPES.RECIPE, recipeId: recipeId },
       dateStr,
       selectedMealType.toLowerCase(),
-      modalServings,
+      servings,
     );
-    setIsModalOpen(false);
-    setSelectedRecipeId("");
-    setModalServings(1);
+    setIsManualModalOpen(false);
   };
 
   if (isLoading)
@@ -130,7 +125,7 @@ const MealPlannerPage = () => {
             onAdd={(d, type) => {
               setSelectedDay(d);
               setSelectedMealType(type);
-              setIsModalOpen(true);
+              setIsManualModalOpen(true);
             }}
             onRemove={handleRemoveMeal}
             onUpdateServings={handleUpdateServings}
@@ -139,19 +134,11 @@ const MealPlannerPage = () => {
         </div>
 
         <ManualAddModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setModalServings(1);
-            setSelectedRecipeId("");
-          }}
+          isOpen={isManualModalOpen}
+          onClose={() => setIsManualModalOpen(false)}
           selectedMealType={selectedMealType}
-          selectedRecipeId={selectedRecipeId}
-          modalServings={modalServings}
           recipes={recipes}
-          onRecipeChange={setSelectedRecipeId}
-          onServingsChange={setModalServings}
-          onAdd={handleManualAdd}
+          onAdd={(data) => handleAddMeal(data.recipeId, data.servings)}
         />
       </div>
     </DndProvider>

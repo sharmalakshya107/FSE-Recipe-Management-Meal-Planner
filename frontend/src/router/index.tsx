@@ -32,9 +32,11 @@ const SharedRecipePage = lazy(
   () => import("../pages/recipes/SharedRecipePage"),
 );
 
+import { Spinner } from "../components/feedback/Spinner";
+
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-screen bg-gray-50">
-    <div className="w-12 h-12 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+    <Spinner size="lg" />
   </div>
 );
 

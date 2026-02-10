@@ -4,7 +4,7 @@ export const nutritionConfig = {
   usda: {
     apiKey: config.USDA_API_KEY,
     baseUrl: config.USDA_API_URL,
-    timeout: 5000,
+    timeout: 20000,
     enabled: true,
   },
 };

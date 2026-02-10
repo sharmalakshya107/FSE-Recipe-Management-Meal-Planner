@@ -13,7 +13,11 @@ import { metricsMiddleware } from "./shared/middleware/metrics.js";
 const app = express();
 
 app.use(metricsMiddleware);
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
 app.use(mongoSanitize());
 app.use(globalLimiter);
 app.use(

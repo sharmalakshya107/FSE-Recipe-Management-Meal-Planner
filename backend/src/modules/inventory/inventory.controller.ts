@@ -2,13 +2,6 @@ import { Request, Response } from "express";
 import { inventoryService } from "./inventory.service.js";
 import { AuthRequest } from "../../shared/middleware/authenticate.js";
 import { catchAsync } from "../../shared/utils/catchAsync.js";
-import {
-  createInventoryItemSchema,
-  updateInventoryItemSchema,
-  CreateInventoryInput,
-  UpdateInventoryInput,
-} from "@recipe-planner/shared";
-import { BadRequestError } from "../../shared/errors/index.js";
 
 export const inventoryController = {
   getInventory: catchAsync(async (req: Request, res: Response) => {
@@ -19,30 +12,15 @@ export const inventoryController = {
 
   addItem: catchAsync(async (req: Request, res: Response) => {
     const { user } = req as AuthRequest;
-    const validation = createInventoryItemSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid inventory item", {
-        errors: validation.error.format(),
-      });
-    }
-    const item = await inventoryService.addItem(
-      validation.data as CreateInventoryInput,
-      user.userId,
-    );
+    const item = await inventoryService.addItem(req.body, user.userId);
     res.status(201).json(item);
   }),
 
   updateItem: catchAsync(async (req: Request, res: Response) => {
     const { user } = req as AuthRequest;
-    const validation = updateInventoryItemSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid inventory item", {
-        errors: validation.error.format(),
-      });
-    }
     const item = await inventoryService.updateItem(
       req.params["id"]!,
-      validation.data as UpdateInventoryInput,
+      req.body,
       user.userId,
     );
     res.json(item);

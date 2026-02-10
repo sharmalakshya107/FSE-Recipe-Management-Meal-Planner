@@ -9,7 +9,7 @@ export const CACHE_TTL = {
 };
 
 export const HOUSEHOLD = {
-  INVITE_CODE_LENGTH: 7,
+  INVITE_CODE_LENGTH: 10,
 };
 
 export const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];

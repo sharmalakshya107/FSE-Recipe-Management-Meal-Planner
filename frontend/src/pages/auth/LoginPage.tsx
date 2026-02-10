@@ -8,6 +8,7 @@ import { setCredentials } from "../../app/store/authSlice";
 import { ROUTES } from "../../config/routes";
 import { ENV } from "../../config/env";
 import { LogIn, Mail, Lock, ArrowRight, Github } from "lucide-react";
+import googleIcon from "../../assets/icons/google.svg";
 import { Button } from "../../components/ui/Button";
 
 interface ApiError {
@@ -45,7 +46,7 @@ const LoginPage = () => {
       dispatch(setCredentials(response));
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      console.error("Failed to login:", err);
+      // Error handled by mutation state
     }
   };
 
@@ -152,11 +153,7 @@ const LoginPage = () => {
                 href={`${ENV.API_BASE_URL}/auth/google`}
                 className="flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition-colors shadow-sm"
               >
-                <img
-                  src="https://www.svgrepo.com/show/475656/google-color.svg"
-                  className="w-4 h-4"
-                  alt="Google"
-                />
+                <img src={googleIcon} className="w-4 h-4" alt="Google" />
                 <span className="text-xs font-bold text-gray-700">Google</span>
               </a>
 

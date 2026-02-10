@@ -1,3 +1,4 @@
+import React, { memo } from "react";
 import { Recipe } from "@recipe-planner/shared";
 import { Clock, Users, Flame, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -7,7 +8,7 @@ interface RecipeCardProps {
   onClick?: () => void;
 }
 
-export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
+export const RecipeCard = memo(({ recipe, onClick }: RecipeCardProps) => {
   return (
     <div
       onClick={onClick}
@@ -52,18 +53,23 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
         <div className="flex items-center justify-between pt-4 border-t border-gray-50">
           <Stat icon={Clock} value={`${recipe.prepTime + recipe.cookTime}m`} />
           <Stat icon={Users} value={`${recipe.servings} Servings`} />
-          <Stat icon={Flame} value={`${recipe.nutrition.calories} kcal`} />
+          <Stat
+            icon={Flame}
+            value={`${recipe.nutrition?.calories || 0} kcal`}
+          />
         </div>
       </div>
     </div>
   );
-};
+});
 
-const Stat = ({ icon: Icon, value }: { icon: LucideIcon; value: string }) => (
-  <div className="flex items-center gap-1.5">
-    <Icon size={14} className="text-gray-400" />
-    <span className="text-[10px] font-bold text-gray-600 uppercase">
-      {value}
-    </span>
-  </div>
+const Stat = memo(
+  ({ icon: Icon, value }: { icon: LucideIcon; value: string }) => (
+    <div className="flex items-center gap-1.5">
+      <Icon size={14} className="text-gray-400" />
+      <span className="text-[10px] font-bold text-gray-600 uppercase">
+        {value}
+      </span>
+    </div>
+  ),
 );

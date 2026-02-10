@@ -5,11 +5,13 @@ import { Ingredient, Unit } from "@recipe-planner/shared";
 interface IngredientFormProps {
   ingredients: Ingredient[];
   onChange: (ingredients: Ingredient[]) => void;
+  error?: string;
 }
 
 export const IngredientForm = ({
   ingredients,
   onChange,
+  error,
 }: IngredientFormProps) => {
   const [newIngredient, setNewIngredient] = useState<{
     name: string;
@@ -112,6 +114,7 @@ export const IngredientForm = ({
           </span>
         ))}
       </div>
+      {error && <p className="text-xs font-medium text-rose-500">{error}</p>}
     </div>
   );
 };

@@ -13,6 +13,10 @@ interface RecipeBasicInfoProps {
   }) => void;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isUploading: boolean;
+  errors?: {
+    title?: string;
+    description?: string;
+  };
 }
 
 export const RecipeBasicInfo = ({
@@ -22,6 +26,7 @@ export const RecipeBasicInfo = ({
   onChange,
   onImageUpload,
   isUploading,
+  errors,
 }: RecipeBasicInfoProps) => {
   return (
     <div className="space-y-4">
@@ -30,17 +35,23 @@ export const RecipeBasicInfo = ({
         placeholder="e.g. Classic Margherita Pizza"
         value={title}
         onChange={(e) => onChange({ title: e.target.value })}
-        required
+        error={errors?.title}
       />
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-gray-700">Description</label>
         <textarea
-          className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-500 min-h-[100px]"
+          className={`w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-500 min-h-[100px] ${
+            errors?.description ? "border-rose-500" : ""
+          }`}
           placeholder="Tell us about your recipe..."
           value={description}
           onChange={(e) => onChange({ description: e.target.value })}
-          required
         />
+        {errors?.description && (
+          <p className="text-xs font-medium text-rose-500">
+            {errors.description}
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">

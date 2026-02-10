@@ -40,7 +40,7 @@ const RegisterPage = () => {
       await registerUser(data).unwrap();
       setIsSuccess(true);
     } catch (err) {
-      console.error("Failed to register:", err);
+      // Error handled by mutation state
     }
   };
 

@@ -21,3 +21,10 @@ export const updateMealPlanSchema = z.object({
   days: z.array(dayPlanSchema).optional(),
   // Or specific slots update? Keeping it simple for now based on typical usage
 });
+
+export const addMealSchema = z.object({
+  recipeId: z.string().min(1, "Recipe is required"),
+  servings: z.number().min(1, "Servings must be at least 1"),
+});
+
+export type AddMealData = z.infer<typeof addMealSchema>;

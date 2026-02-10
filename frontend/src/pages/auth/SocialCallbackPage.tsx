@@ -4,12 +4,15 @@ import { useDispatch } from "react-redux";
 import { setCredentials, setAccessToken } from "../../app/store/authSlice";
 import { authApi } from "../../services/api/authApi";
 import { ROUTES } from "../../config/routes";
+import { useToast } from "../../components/feedback/Toast";
+import { Spinner } from "../../components/feedback/Spinner";
 
 const SocialCallbackPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const triggerGetMe = authApi.endpoints.getMe.useLazyQuery()[0];
+  const { addToast } = useToast();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -31,7 +34,7 @@ const SocialCallbackPage = () => {
 
           navigate(ROUTES.DASHBOARD);
         } catch (error) {
-          console.error("Social login failed to fetch user:", error);
+          addToast("Social login failed. Please try again.", "error");
           navigate(ROUTES.LOGIN);
         }
       } else {
@@ -45,7 +48,7 @@ const SocialCallbackPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+        <Spinner size="lg" className="mx-auto" />
         <p className="mt-4 text-gray-600 font-medium">
           Completing social login...
         </p>

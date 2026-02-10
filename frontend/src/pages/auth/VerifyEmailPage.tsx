@@ -71,7 +71,7 @@ const VerifyEmailPage = () => {
                 className="text-center space-y-6"
               >
                 <div className="relative">
-                  <div className="w-20 h-20 border-4 border-indigo-50 rounded-full animate-spin border-t-indigo-600 mx-auto" />
+                  <Spinner size="lg" className="mx-auto" />
                   <Mail
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-600"
                     size={24}

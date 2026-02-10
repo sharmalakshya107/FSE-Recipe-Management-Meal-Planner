@@ -18,13 +18,7 @@ export const userController = {
     const {
       user: { userId },
     } = req as AuthRequest;
-    const validation = updateUserProfileSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid profile data", {
-        errors: validation.error.format(),
-      });
-    }
-    const profile = await userService.updateProfile(userId, validation.data);
+    const profile = await userService.updateProfile(userId, req.body);
     res.json(profile);
   }),
 };

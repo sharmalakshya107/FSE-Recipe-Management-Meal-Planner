@@ -140,7 +140,6 @@ export const useMealPlanActions = ({
           addToast("Meal scheduled!", "success");
         }
       } catch (err) {
-        console.error("Failed to update meal plan:", err);
         addToast("Failed to update meal plan", "error");
       }
     },

@@ -19,31 +19,37 @@ interface WeekGridProps {
   ) => void;
 }
 
-export const WeekGrid = ({
-  weekDays,
-  planDays,
-  recipes,
-  formatDateLocal,
-  onAdd,
-  onRemove,
-  onUpdateServings,
-  onDrop,
-}: WeekGridProps) => {
-  return (
-    <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-4 -mx-2 px-2 snap-x">
-      {weekDays.map((date) => (
-        <DayColumn
-          key={date.toISOString()}
-          date={date}
-          dayPlan={planDays?.find((d) => d && d.date === formatDateLocal(date))}
-          recipes={recipes}
-          isToday={date.toDateString() === new Date().toDateString()}
-          onAdd={onAdd}
-          onRemove={onRemove}
-          onUpdateServings={onUpdateServings}
-          onDrop={onDrop}
-        />
-      ))}
-    </div>
-  );
-};
+export const WeekGrid = React.memo(
+  ({
+    weekDays,
+    planDays,
+    recipes,
+    formatDateLocal,
+    onAdd,
+    onRemove,
+    onUpdateServings,
+    onDrop,
+  }: WeekGridProps) => {
+    return (
+      <div className="flex flex-col xl:flex-row gap-6 overflow-x-auto pb-4 -mx-2 px-2 snap-x">
+        {weekDays.map((date) => (
+          <DayColumn
+            key={date.toISOString()}
+            date={date}
+            dayPlan={planDays?.find(
+              (d) => d && d.date === formatDateLocal(date),
+            )}
+            recipes={recipes}
+            isToday={date.toDateString() === new Date().toDateString()}
+            onAdd={onAdd}
+            onRemove={onRemove}
+            onUpdateServings={onUpdateServings}
+            onDrop={onDrop}
+          />
+        ))}
+      </div>
+    );
+  },
+);
+
+WeekGrid.displayName = "WeekGrid";

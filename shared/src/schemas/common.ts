@@ -4,8 +4,6 @@ export const dateRangeQuerySchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
 });
-// Note: Keeping it lenient (strings) but could enforce regex if needed.
-// Logic in backend handles Date parsing.
 
 export const paginationQuerySchema = z.object({
   page: z.string().regex(/^\d+$/).transform(Number).optional(),
@@ -23,3 +21,39 @@ export const scaleRecipeQuerySchema = z.object({
 });
 
 export const uuidSchema = z.string().uuid("Invalid ID format");
+
+export const unitSchema = z.enum([
+  "g",
+  "kg",
+  "ml",
+  "l",
+  "tsp",
+  "tbsp",
+  "cup",
+  "pcs",
+  "oz",
+  "lb",
+  "piece",
+  "slice",
+  "clove",
+  "whole",
+  "pinch",
+  "dash",
+  "to taste",
+  "unit",
+  "each",
+  "can",
+  "box",
+  "bottle",
+  "pkg",
+  "packet",
+  "bag",
+  "head",
+  "bunch",
+  "sprig",
+  "leaf",
+  "gallon",
+  "quart",
+  "pint",
+  "fl oz",
+]);

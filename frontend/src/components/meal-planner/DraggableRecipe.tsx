@@ -4,7 +4,7 @@ import { Utensils, GripVertical } from "lucide-react";
 import { Recipe } from "@recipe-planner/shared";
 import { ITEM_TYPES } from "./constants";
 
-export const DraggableRecipe = ({ recipe }: { recipe: Recipe }) => {
+export const DraggableRecipe = React.memo(({ recipe }: { recipe: Recipe }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ITEM_TYPES.RECIPE,
     item: { recipeId: recipe.id, type: ITEM_TYPES.RECIPE },
@@ -50,4 +50,6 @@ export const DraggableRecipe = ({ recipe }: { recipe: Recipe }) => {
       />
     </div>
   );
-};
+});
+
+DraggableRecipe.displayName = "DraggableRecipe";

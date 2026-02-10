@@ -7,6 +7,7 @@ import { logout } from "../../app/store/authSlice";
 import { useLogoutMutation } from "../../services/api/authApi";
 import { ROUTES } from "../../config/routes";
 import { motion } from "framer-motion";
+import { useToast } from "../../components/feedback/Toast";
 
 export const Header: React.FC<{ onMenuClick: () => void }> = ({
   onMenuClick,
@@ -15,12 +16,13 @@ export const Header: React.FC<{ onMenuClick: () => void }> = ({
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
   const [logoutMutation] = useLogoutMutation();
+  const { addToast } = useToast();
 
   const handleLogout = async () => {
     try {
       await logoutMutation().unwrap();
     } catch (err) {
-      console.error("Logout error:", err);
+      addToast("Failed to logout completely", "error");
     } finally {
       dispatch(logout());
       navigate(ROUTES.LOGIN);

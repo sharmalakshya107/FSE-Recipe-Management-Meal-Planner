@@ -1,24 +1,5 @@
 import { z } from "zod";
-
-const unitSchema = z.enum([
-  "g",
-  "kg",
-  "ml",
-  "l",
-  "tsp",
-  "tbsp",
-  "cup",
-  "pcs",
-  "oz",
-  "lb",
-  "piece",
-  "slice",
-  "clove",
-  "whole",
-  "pinch",
-  "dash",
-  "to taste",
-]);
+import { unitSchema } from "./common.js";
 
 const ingredientSchema = z.object({
   id: z.string().uuid(),

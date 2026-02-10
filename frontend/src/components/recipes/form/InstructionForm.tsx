@@ -5,11 +5,13 @@ import { Instruction } from "@recipe-planner/shared";
 interface InstructionFormProps {
   instructions: Instruction[];
   onChange: (instructions: Instruction[]) => void;
+  error?: string;
 }
 
 export const InstructionForm = ({
   instructions,
   onChange,
+  error,
 }: InstructionFormProps) => {
   const [newInstruction, setNewInstruction] = useState("");
 
@@ -73,6 +75,7 @@ export const InstructionForm = ({
           </div>
         ))}
       </div>
+      {error && <p className="text-xs font-medium text-rose-500">{error}</p>}
     </div>
   );
 };

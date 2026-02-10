@@ -3,16 +3,56 @@ import { authController } from "./auth.controller.js";
 import { authenticate } from "../../shared/middleware/authenticate.js";
 import passport from "passport";
 import { authLimiter } from "../../shared/middleware/rateLimit.js";
+import { validate } from "../../shared/middleware/validate.js";
+import {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  verifyEmailSchema,
+  changePasswordSchema,
+} from "@recipe-planner/shared";
 
 const router = Router();
 
-router.post("/register", authLimiter, authController.register);
-router.post("/login", authLimiter, authController.login);
+router.post(
+  "/register",
+  authLimiter,
+  validate({ body: registerSchema }),
+  authController.register,
+);
+router.post(
+  "/login",
+  authLimiter,
+  validate({ body: loginSchema }),
+  authController.login,
+);
 router.post("/refresh", authController.refresh);
 router.post("/logout", authController.logout);
-router.get("/verify-email", authController.verifyEmail);
-router.post("/forgot-password", authLimiter, authController.forgotPassword);
-router.post("/reset-password", authLimiter, authController.resetPassword);
+router.get(
+  "/verify-email",
+  validate({ query: verifyEmailSchema }),
+  authController.verifyEmail,
+);
+router.post(
+  "/forgot-password",
+  authLimiter,
+  validate({ body: forgotPasswordSchema }),
+  authController.forgotPassword,
+);
+router.post(
+  "/reset-password",
+  authLimiter,
+  validate({ body: resetPasswordSchema }),
+  authController.resetPassword,
+);
+
+router.post(
+  "/change-password",
+  authenticate,
+  validate({ body: changePasswordSchema }),
+  authController.changePassword,
+);
 
 router.get(
   "/google",
@@ -42,7 +82,5 @@ router.get(
   }),
   authController.socialCallback,
 );
-
-router.post("/change-password", authenticate, authController.changePassword);
 
 export default router;

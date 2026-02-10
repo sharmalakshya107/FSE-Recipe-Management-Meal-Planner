@@ -39,7 +39,7 @@ export const recipeService = {
       search: filters?.search?.trim() || undefined,
     };
 
-    // CRITICAL SECURITY GUARD: Never return all recipes without owner filter
+   
     if (
       !normalizedFilters.createdBy ||
       (Array.isArray(normalizedFilters.createdBy) &&
@@ -48,10 +48,7 @@ export const recipeService = {
       console.warn(
         "Security Alert: Attempt to fetch recipes without createdBy filter",
       );
-      // Return empty instead of throwing to be graceful, or throw?
-      // Throwing is safer to signal bug.
-      // But for user experience, maybe empty list?
-      // Let's return empty result to fail closed safe.
+      
       return { data: [], total: 0 };
     }
 

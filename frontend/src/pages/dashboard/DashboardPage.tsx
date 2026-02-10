@@ -1,3 +1,4 @@
+import React from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../app/store/authSlice";
 import { useMealPlan } from "../../hooks/useMealPlan";
@@ -5,6 +6,12 @@ import { useInventory } from "../../hooks/useInventory";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../config/routes";
+
+const QUICK_ACTIONS = [
+  { label: "Browse Recipes", path: "/recipes" },
+  { label: "Inventory Management", path: "/inventory" },
+  { label: "View Nutrition", path: "/nutrition" },
+];
 
 const DashboardPage = () => {
   const user = useSelector(selectCurrentUser);
@@ -36,36 +43,39 @@ const DashboardPage = () => {
     return d >= now && d <= threeDaysFromNow;
   }).length;
 
-  const stats = [
-    {
-      label: "Active Plan",
-      value: plan ? "Active" : "None",
-      color: "border-indigo-100",
-      subtext: "Current Week",
-    },
-    {
-      label: "Stock Items",
-      value: inventory.length,
-      color:
-        expiredCount > 0
-          ? "border-rose-200 bg-rose-50/30"
-          : expiringSoonCount > 0
-            ? "border-amber-200 bg-amber-50/30"
-            : "border-emerald-100 bg-emerald-50/30",
-      subtext:
-        expiredCount > 0
-          ? `${expiredCount} Items Expired!`
-          : expiringSoonCount > 0
-            ? `${expiringSoonCount} Expiring Soon`
-            : "All Stock Fresh",
-    },
-    {
-      label: "Today's Meals",
-      value: todaysMeals,
-      color: "border-indigo-50",
-      subtext: "Planned Today",
-    },
-  ];
+  const stats = React.useMemo(
+    () => [
+      {
+        label: "Active Plan",
+        value: plan ? "Active" : "None",
+        color: "border-indigo-100",
+        subtext: "Current Week",
+      },
+      {
+        label: "Stock Items",
+        value: inventory.length,
+        color:
+          expiredCount > 0
+            ? "border-rose-200 bg-rose-50/30"
+            : expiringSoonCount > 0
+              ? "border-amber-200 bg-amber-50/30"
+              : "border-emerald-100 bg-emerald-50/30",
+        subtext:
+          expiredCount > 0
+            ? `${expiredCount} Items Expired!`
+            : expiringSoonCount > 0
+              ? `${expiringSoonCount} Expiring Soon`
+              : "All Stock Fresh",
+      },
+      {
+        label: "Today's Meals",
+        value: todaysMeals,
+        color: "border-indigo-50",
+        subtext: "Planned Today",
+      },
+    ],
+    [plan, inventory.length, expiredCount, expiringSoonCount, todaysMeals],
+  );
 
   return (
     <div className="space-y-8">
@@ -168,20 +178,7 @@ const DashboardPage = () => {
             Quick Actions
           </h2>
           <div className="space-y-3">
-            {[
-              {
-                label: "Browse Recipes",
-                path: "/recipes",
-              },
-              {
-                label: "Inventory Management",
-                path: "/inventory",
-              },
-              {
-                label: "View Nutrition",
-                path: "/nutrition",
-              },
-            ].map((action) => (
+            {QUICK_ACTIONS.map((action) => (
               <Link
                 key={action.label}
                 to={action.path}

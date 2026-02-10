@@ -1,14 +1,5 @@
 import { Unit } from "./recipe.js";
-
-export enum InventoryCategory {
-  Produce = "Produce",
-  Dairy = "Dairy",
-  Pantry = "Pantry",
-  Meat = "Meat",
-  Frozen = "Frozen",
-  Spices = "Spices",
-  Other = "Other",
-}
+import { InventoryCategory } from "./common.js";
 
 export interface InventoryItem {
   id: string;
@@ -32,9 +23,3 @@ export interface ShoppingListItem {
   isPurchased: boolean;
   recipeId?: string;
 }
-
-export interface CreateInventoryInput extends Omit<
-  InventoryItem,
-  "id" | "userId" | "updatedAt"
-> {}
-export interface UpdateInventoryInput extends Partial<CreateInventoryInput> {}

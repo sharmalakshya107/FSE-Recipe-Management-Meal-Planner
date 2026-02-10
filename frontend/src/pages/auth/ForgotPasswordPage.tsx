@@ -12,17 +12,37 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import {
+  forgotPasswordSchema,
+  ForgotPasswordInput,
+} from "@recipe-planner/shared";
+import { useAppForm } from "../../hooks/useAppForm";
+
 const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    reset,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useAppForm({
+    schema: forgotPasswordSchema,
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const emailValue = watch("email");
+
+  const onSubmit = async (data: ForgotPasswordInput) => {
     setIsLoading(true);
     setError(null);
     try {
+      // Mock API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setSubmitted(true);
     } catch (err) {
@@ -77,7 +97,7 @@ const ForgotPasswordPage = () => {
                   </Alert>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
                       Email Address
@@ -89,13 +109,16 @@ const ForgotPasswordPage = () => {
                       />
                       <input
                         type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...register("email")}
                         placeholder="your@email.com"
-                        className="input-field pl-12 h-14"
+                        className={`input-field pl-12 h-14 ${errors.email ? "border-rose-500 focus:ring-rose-500" : ""}`}
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-xs text-rose-500 font-bold ml-1">
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
 
                   <Button
@@ -150,7 +173,9 @@ const ForgotPasswordPage = () => {
                   <p className="text-sm font-medium text-gray-500">
                     We've sent a recovery link to:
                     <br />
-                    <span className="font-bold text-gray-900">{email}</span>
+                    <span className="font-bold text-gray-900">
+                      {emailValue}
+                    </span>
                   </p>
                 </div>
 

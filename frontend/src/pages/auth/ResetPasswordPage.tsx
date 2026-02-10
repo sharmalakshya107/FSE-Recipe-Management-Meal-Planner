@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ROUTES } from "../../config/routes";
@@ -12,30 +12,55 @@ import {
   Key,
   RefreshCw,
 } from "lucide-react";
+import { z } from "zod";
+
+import {
+  resetPasswordSchema,
+  ResetPasswordInput,
+} from "@recipe-planner/shared";
+import { useAppForm } from "../../hooks/useAppForm";
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match. Please try again.");
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useAppForm({
+    schema: resetPasswordSchema
+      .extend({
+        confirmPassword: z.string().min(1, "Please confirm your password"),
+      })
+      .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+      }),
+    defaultValues: {
+      token: token || "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
 
+  useEffect(() => {
+    if (token) {
+      setValue("token", token);
+    }
+  }, [token, setValue]);
+
+  const onSubmit = async (data: ResetPasswordInput) => {
     setIsLoading(true);
     setError(null);
     try {
+      // Mock API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setSubmitted(true);
       setTimeout(() => navigate(ROUTES.LOGIN), 3000);
@@ -104,7 +129,7 @@ const ResetPasswordPage = () => {
                 </Alert>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
                     New Password
@@ -116,15 +141,20 @@ const ResetPasswordPage = () => {
                     />
                     <input
                       type="password"
-                      required
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
+                      {...register("newPassword")}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-500"
+                      className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none transition-all ${
+                        errors.newPassword
+                          ? "border-rose-300 focus:border-rose-500"
+                          : "border-gray-200 focus:border-indigo-500"
+                      }`}
                     />
                   </div>
+                  {errors.newPassword && (
+                    <p className="text-[10px] font-bold text-rose-500 ml-1">
+                      {errors.newPassword.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1">
@@ -138,18 +168,20 @@ const ResetPasswordPage = () => {
                     />
                     <input
                       type="password"
-                      required
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
+                      {...register("confirmPassword")}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-500"
+                      className={`w-full pl-10 pr-4 py-2.5 bg-gray-50 border rounded-xl text-sm outline-none transition-all ${
+                        errors.confirmPassword
+                          ? "border-rose-300 focus:border-rose-500"
+                          : "border-gray-200 focus:border-indigo-500"
+                      }`}
                     />
                   </div>
+                  {errors.confirmPassword && (
+                    <p className="text-[10px] font-bold text-rose-500 ml-1">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
                 </div>
 
                 <Button

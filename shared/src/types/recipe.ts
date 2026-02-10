@@ -15,7 +15,23 @@ export type Unit =
   | "whole"
   | "pinch"
   | "dash"
-  | "to taste";
+  | "to taste"
+  | "unit"
+  | "each"
+  | "can"
+  | "box"
+  | "bottle"
+  | "pkg"
+  | "packet"
+  | "bag"
+  | "head"
+  | "bunch"
+  | "sprig"
+  | "leaf"
+  | "gallon"
+  | "quart"
+  | "pint"
+  | "fl oz";
 
 export interface Ingredient {
   id: string;

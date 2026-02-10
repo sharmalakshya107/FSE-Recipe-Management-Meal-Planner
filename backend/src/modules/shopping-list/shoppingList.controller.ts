@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../shared/utils/catchAsync.js";
-import { dateRangeQuerySchema } from "@recipe-planner/shared";
-import { BadRequestError } from "../../shared/errors/index.js";
 import { inventoryService } from "../inventory/inventory.service.js";
 import { mealPlanService } from "../meal-plan/mealPlan.service.js";
 import { recipeService } from "../recipe/recipe.service.js";
@@ -11,15 +9,10 @@ import { AuthRequest } from "../../shared/middleware/authenticate.js";
 export const shoppingListController = {
   getGeneratedList: catchAsync(async (req: Request, res: Response) => {
     const { user } = req as AuthRequest;
-    const validation = dateRangeQuerySchema.safeParse(req.query);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid date range", {
-        errors: validation.error.format(),
-      });
-    }
-    const { startDate, endDate } = validation.data;
-    if (!startDate || !endDate)
-      throw new BadRequestError("Start and end date required");
+    const { startDate, endDate } = req.query as {
+      startDate: string;
+      endDate: string;
+    };
 
     const plan = await mealPlanService.getWeeklyPlan(
       user.userId,

@@ -15,6 +15,11 @@ interface ConfirmModalProps {
   isLoading?: boolean;
 }
 
+import {
+  CONFIRM_MODAL_VARIANTS,
+  CONFIRM_MODAL_BUTTONS,
+} from "../../theme/variants";
+
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   onClose,
@@ -26,23 +31,11 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   variant = "danger",
   isLoading = false,
 }) => {
-  const variantStyles = {
-    danger: "bg-rose-50 text-rose-600 border-rose-100",
-    warning: "bg-amber-50 text-amber-600 border-amber-100",
-    info: "bg-indigo-50 text-indigo-600 border-indigo-100",
-  };
-
-  const buttonVariants = {
-    danger: "bg-rose-600 hover:bg-rose-700 shadow-rose-100",
-    warning: "bg-amber-600 hover:bg-amber-700 shadow-amber-100",
-    info: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100",
-  };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <div className="space-y-6">
         <div
-          className={`p-4 rounded-xl border flex gap-3 ${variantStyles[variant]}`}
+          className={`p-4 rounded-xl border flex gap-3 ${CONFIRM_MODAL_VARIANTS[variant]}`}
         >
           <AlertCircle className="shrink-0" size={20} />
           <p className="text-sm font-medium leading-relaxed">{message}</p>
@@ -60,7 +53,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <Button
             onClick={onConfirm}
             isLoading={isLoading}
-            className={`flex-1 rounded-xl h-12 font-bold text-white shadow-lg transition-all active:scale-95 ${buttonVariants[variant]}`}
+            className={`flex-1 rounded-xl h-12 font-bold text-white shadow-lg transition-all active:scale-95 ${CONFIRM_MODAL_BUTTONS[variant]}`}
           >
             {confirmLabel}
           </Button>

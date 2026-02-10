@@ -30,80 +30,86 @@ const formatDateLocal = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const DropSlot = ({
-  date,
-  mealType,
-  slots,
-  recipes,
-  onAdd,
-  onRemove,
-  onUpdateServings,
-  onDrop,
-}: DropSlotProps) => {
-  const dateStr = formatDateLocal(date);
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: [ITEM_TYPES.MEAL, ITEM_TYPES.RECIPE],
-    drop: (item: DragItem) => onDrop(item, dateStr, mealType.id),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
+export const DropSlot = React.memo(
+  ({
+    date,
+    mealType,
+    slots,
+    recipes,
+    onAdd,
+    onRemove,
+    onUpdateServings,
+    onDrop,
+  }: DropSlotProps) => {
+    const dateStr = formatDateLocal(date);
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
+      accept: [ITEM_TYPES.MEAL, ITEM_TYPES.RECIPE],
+      drop: (item: DragItem) => onDrop(item, dateStr, mealType.id),
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+    }));
 
-  const Icon = mealType.icon;
+    const Icon = mealType.icon;
 
-  return (
-    <div
-      ref={drop}
-      className={`
+    return (
+      <div
+        ref={drop}
+        className={`
         relative min-h-[100px] p-3 rounded-2xl border-2 border-transparent transition-all
         ${isOver ? "bg-indigo-50/50 border-dashed border-indigo-400/50" : "bg-gray-50/30"}
         ${canDrop && !isOver ? "bg-indigo-50/20" : ""}
       `}
-    >
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-lg ${mealType.bg} ${mealType.color}`}>
-            <Icon size={14} />
+      >
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <div
+              className={`p-1.5 rounded-lg ${mealType.bg} ${mealType.color}`}
+            >
+              <Icon size={14} />
+            </div>
+            <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
+              {mealType.label}
+            </span>
           </div>
-          <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
-            {mealType.label}
-          </span>
+          <button
+            onClick={() => onAdd(date, mealType.label)}
+            className="p-1 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-gray-100"
+          >
+            <Plus size={14} />
+          </button>
         </div>
-        <button
-          onClick={() => onAdd(date, mealType.label)}
-          className="p-1 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-gray-100"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
 
-      <div className="space-y-2">
-        <AnimatePresence mode="popLayout">
-          {slots.map((slot) => {
-            const recipe = recipes.find((r) => r.id === slot.recipeId);
-            return (
-              <PlannedMeal
-                key={slot.id}
-                slot={slot}
-                recipe={recipe}
-                date={dateStr}
-                mealType={mealType.id}
-                onRemove={onRemove}
-                onUpdateServings={onUpdateServings}
-              />
-            );
-          })}
-        </AnimatePresence>
+        <div className="space-y-2">
+          <AnimatePresence mode="popLayout">
+            {slots.map((slot) => {
+              const recipe = recipes.find((r) => r.id === slot.recipeId);
+              return (
+                <PlannedMeal
+                  key={slot.id}
+                  slot={slot}
+                  recipe={recipe}
+                  date={dateStr}
+                  mealType={mealType.id}
+                  onRemove={onRemove}
+                  onUpdateServings={onUpdateServings}
+                />
+              );
+            })}
+          </AnimatePresence>
 
-        {slots.length === 0 && (
-          <div className="py-4 text-center border border-dashed border-gray-100 rounded-xl opacity-40">
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
-              Drop Here
-            </p>
-          </div>
-        )}
+          {slots.length === 0 && (
+            <div className="py-4 text-center border border-dashed border-gray-100 rounded-xl opacity-40">
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">
+                Drop Here
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
+
+DropSlot.displayName = "DropSlot";

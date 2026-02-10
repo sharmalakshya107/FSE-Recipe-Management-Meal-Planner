@@ -1,14 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../shared/utils/catchAsync.js";
 import { authService } from "./auth.service.js";
-import {
-  loginSchema,
-  registerSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  changePasswordSchema,
-  verifyEmailSchema,
-} from "@recipe-planner/shared";
 import { BadRequestError } from "../../shared/errors/index.js";
 import { config } from "../../config/index.js";
 import { AuthRequest } from "../../shared/middleware/authenticate.js";
@@ -17,14 +9,7 @@ import { authRepository, UserRecord } from "./auth.repository.js";
 
 export const authController = {
   register: catchAsync(async (req: Request, res: Response) => {
-    const validation = registerSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Validation failed", {
-        errors: validation.error.format(),
-      });
-    }
-
-    const result = await authService.register(validation.data);
+    const result = await authService.register(req.body);
 
     res.status(201).json({
       message: result.message,
@@ -33,25 +18,13 @@ export const authController = {
   }),
 
   verifyEmail: catchAsync(async (req: Request, res: Response) => {
-    const validation = verifyEmailSchema.safeParse(req.query);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid verification request", {
-        errors: validation.error.format(),
-      });
-    }
-    await authService.verifyEmail(validation.data.token);
+    const { token } = req.query as { token: string };
+    await authService.verifyEmail(token);
     res.json({ message: "Email verified successfully" });
   }),
 
   login: catchAsync(async (req: Request, res: Response) => {
-    const validation = loginSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Validation failed", {
-        errors: validation.error.format(),
-      });
-    }
-
-    const result = await authService.login(validation.data);
+    const result = await authService.login(req.body);
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
@@ -67,13 +40,7 @@ export const authController = {
   }),
 
   forgotPassword: catchAsync(async (req: Request, res: Response) => {
-    const validation = forgotPasswordSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Invalid email address", {
-        errors: validation.error.format(),
-      });
-    }
-    await authService.forgotPassword(validation.data.email);
+    await authService.forgotPassword(req.body.email);
     res.json({
       message:
         "If an account exists with that email, a password reset link has been sent.",
@@ -81,28 +48,13 @@ export const authController = {
   }),
 
   resetPassword: catchAsync(async (req: Request, res: Response) => {
-    const validation = resetPasswordSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Validation failed", {
-        errors: validation.error.format(),
-      });
-    }
-    await authService.resetPassword(
-      validation.data.token,
-      validation.data.newPassword,
-    );
+    await authService.resetPassword(req.body.token, req.body.newPassword);
     res.json({ message: "Password has been reset successfully" });
   }),
 
   changePassword: catchAsync(async (req: Request, res: Response) => {
     const { user } = req as AuthRequest;
-    const validation = changePasswordSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError("Validation failed", {
-        errors: validation.error.format(),
-      });
-    }
-    const { currentPassword, newPassword } = validation.data;
+    const { currentPassword, newPassword } = req.body;
     await authService.changePassword(user.userId, currentPassword, newPassword);
     res.json({ message: "Password changed successfully" });
   }),
